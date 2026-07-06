@@ -11,7 +11,7 @@ permissions:
 
 env:
   AWS_REGION: ap-south-1
-  EKS_CLUSTER_NAME: my-eks-cluster
+  EKS_CLUSTER_NAME: your-eks-cluster
   ECR_REPOSITORY: meridian
   K8S_NAMESPACE: default
   DEPLOYMENT_NAME: meridian
