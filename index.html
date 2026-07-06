@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian No. 7 — Field Station</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#12282A;
+    --bg-panel:#183434;
+    --bg-panel-raised:#1D3D3D;
+    --brass:#C9A24B;
+    --brass-bright:#E7C976;
+    --brass-dim:#8A7038;
+    --cream:#F1E9D8;
+    --cream-dim:#B9C4BE;
+    --slate:#5E7B7B;
+    --alert:#B5573C;
+    --line: rgba(241,233,216,0.09);
+    --shadow-deep: rgba(0,0,0,0.45);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(201,162,75,0.06), transparent 45%),
+      radial-gradient(ellipse at 100% 100%, rgba(94,123,123,0.10), transparent 55%),
+      var(--bg-deep);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding: 32px 20px 60px;
+  }
+
+  .wrap{
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .brand-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin: 0 0 6px;
+  }
+  .brand-title{
+    font-family:'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .header-right{
+    text-align:right;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--cream-dim);
+    line-height: 1.7;
+  }
+  .status-dot{
+    display:inline-block;
+    width:7px; height:7px;
+    border-radius:50%;
+    background: #7FBF8F;
+    box-shadow: 0 0 8px #7FBF8F;
+    margin-right:7px;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:0.4; }
+  }
+
+  /* ---------- Hero gauge ---------- */
+  .hero{
+    display:grid;
+    grid-template-columns: 340px 1fr;
+    gap: 40px;
+    align-items:center;
+    background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel));
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 36px;
+    margin-bottom: 28px;
+    box-shadow: 0 20px 50px -20px var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .dial-wrap{ position:relative; width:280px; height:280px; margin: 0 auto; }
+
+  .dial-face{
+    filter: drop-shadow(0 10px 24px rgba(0,0,0,0.4));
+  }
+
+  .needle{
+    transform-origin: 140px 140px;
+    transition: transform 1.4s cubic-bezier(.34,1.2,.4,1);
+  }
+
+  .dial-readout{
+    position:absolute;
+    left:50%; top: 62%;
+    transform: translate(-50%,-50%);
+    text-align:center;
+    pointer-events:none;
+  }
+  .dial-readout .num{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 46px;
+    color: var(--cream);
+    line-height:1;
+  }
+  .dial-readout .unit{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--brass);
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+  }
+
+  .hero-copy .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin: 0 0 10px;
+  }
+  .hero-copy h2{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0 0 14px;
+  }
+  .hero-copy p{
+    color: var(--cream-dim);
+    line-height: 1.65;
+    font-size: 14.5px;
+    max-width: 46ch;
+    margin: 0 0 22px;
+  }
+  .hero-stats{
+    display:flex;
+    gap: 28px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .hero-stats div{ font-size: 11px; color: var(--slate); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px;}
+  .hero-stats strong{ font-size: 18px; color: var(--brass-bright); font-family:'Fraunces', serif; font-weight:600; display:block; }
+
+  /* ---------- Instrument grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+  .card{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 22px 20px 20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, transparent, var(--brass-dim), transparent);
+  }
+  .card-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin: 0 0 14px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .arc-wrap{ display:flex; align-items:flex-end; justify-content:space-between; }
+  .arc-value{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 34px;
+    color: var(--cream);
+  }
+  .arc-value span{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--brass);
+    margin-left: 4px;
+  }
+  .trend{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+  }
+  .trend.up{ color:#8FBF8F; border-color: rgba(143,191,143,0.3); }
+  .trend.down{ color:#D18B7A; border-color: rgba(209,139,122,0.3); }
+  .trend.flat{ color:var(--cream-dim); }
+
+  .bar-track{
+    margin-top: 14px;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--brass-dim), var(--brass-bright));
+    border-radius: 2px;
+    transition: width 1.4s cubic-bezier(.34,1.2,.4,1);
+  }
+
+  /* ---------- Ledger ---------- */
+  .ledger{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow:hidden;
+  }
+  .ledger-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ledger-head h3{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin:0;
+  }
+  .ledger-head .count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+  }
+  table{
+    width:100%;
+    border-collapse: collapse;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+  }
+  thead th{
+    text-align:left;
+    padding: 10px 22px;
+    color: var(--slate);
+    font-weight:500;
+    letter-spacing: 0.08em;
+    text-transform:uppercase;
+    font-size: 10.5px;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td{
+    padding: 10px 22px;
+    color: var(--cream-dim);
+    border-bottom: 1px solid var(--line);
+  }
+  tbody tr:first-child td{ color: var(--cream); }
+  tbody tr:last-child td{ border-bottom:none; }
+  .tag{
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+  .tag.nominal{ background: rgba(143,191,143,0.12); color:#8FBF8F; }
+  .tag.watch{ background: rgba(201,162,75,0.14); color: var(--brass-bright); }
+
+  footer{
+    text-align:center;
+    margin-top: 28px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 760px){
+    .hero{ grid-template-columns: 1fr; text-align:center; }
+    .hero-stats{ justify-content:center; }
+    .grid{ grid-template-columns: 1fr; }
+    thead{ display:none; }
+    tbody td{ display:block; padding: 4px 22px; }
+    tbody tr{ display:block; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    tbody tr td{ border-bottom:none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .needle{ transition:none; }
+    .bar-fill{ transition:none; }
+    .status-dot{ animation:none; }
+  }
+
+  :focus-visible{
+    outline: 2px solid var(--brass-bright);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div>
+      <p class="brand-eyebrow">Field Station Instrument Panel</p>
+      <h1 class="brand-title">Meridian No. 7</h1>
+    </div>
+    <div class="header-right">
+      <div><span class="status-dot"></span>Live · Simulated feed</div>
+      <div id="clock">—</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="dial-wrap">
+      <svg class="dial-face" width="280" height="280" viewBox="0 0 280 280">
+        <defs>
+          <radialGradient id="faceGrad" cx="50%" cy="42%" r="70%">
+            <stop offset="0%" stop-color="#20403F"/>
+            <stop offset="100%" stop-color="#153030"/>
+          </radialGradient>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#E7C976"/>
+            <stop offset="100%" stop-color="#8A7038"/>
+          </linearGradient>
+        </defs>
+        <circle cx="140" cy="140" r="132" fill="none" stroke="url(#ringGrad)" stroke-width="3"/>
+        <circle cx="140" cy="140" r="120" fill="url(#faceGrad)" stroke="rgba(0,0,0,0.4)" stroke-width="1"/>
+        <!-- ticks -->
+        <g id="ticks" stroke="#B9C4BE" stroke-width="1" opacity="0.5"></g>
+        <g id="ticksMajor" stroke="#E7C976" stroke-width="2"></g>
+        <!-- needle -->
+        <g class="needle" id="needle">
+          <line x1="140" y1="140" x2="140" y2="58" stroke="#C9503A" stroke-width="3" stroke-linecap="round"/>
+          <line x1="140" y1="140" x2="140" y2="176" stroke="#C9503A" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <circle cx="140" cy="140" r="8" fill="#E7C976" stroke="#8A7038" stroke-width="2"/>
+      </svg>
+      <div class="dial-readout">
+        <div class="num" id="tempValue">31.4°</div>
+        <div class="unit">CELSIUS · AMBIENT</div>
+      </div>
+    </div>
+
+    <div class="hero-copy">
+      <p class="eyebrow">Cuttack, Odisha · Station Elev. 26m</p>
+      <h2>Ambient conditions, read at a glance.</h2>
+      <p>This panel mirrors the readings a field station logs by hand — temperature, humidity, wind, and pressure — updated every few seconds from a simulated sensor feed so you can watch the instruments move.</p>
+      <div class="hero-stats">
+        <div>Feels Like<strong id="feelsLike">33°</strong></div>
+        <div>Dew Point<strong id="dewPoint">24°</strong></div>
+        <div>Visibility<strong id="visibility">8.2km</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <p class="card-label">Humidity <span>RH</span></p>
+      <div class="arc-wrap">
+        <div class="arc-value" id="humidityValue">64<span>%</span></div>
+        <div class="trend up" id="humidityTrend">↑ rising</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="humidityBar" style="width:64%"></div></div>
+    </div>
+    <div class="card">
+      <p class="card-label">Wind <span>NE</span></p>
+      <div class="arc-wrap">
+        <div class="arc-value" id="windValue">12<span>km/h</span></div>
+        <div class="trend flat" id="windTrend">→ steady</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="windBar" style="width:30%"></div></div>
+    </div>
+    <div class="card">
+      <p class="card-label">Pressure <span>hPa</span></p>
+      <div class="arc-wrap">
+        <div class="arc-value" id="pressureValue">1009<span>hPa</span></div>
+        <div class="trend down" id="pressureTrend">↓ falling</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="pressureBar" style="width:55%"></div></div>
+    </div>
+  </section>
+
+  <section class="ledger">
+    <div class="ledger-head">
+      <h3>Observation Log</h3>
+      <span class="count"><span id="logCount">0</span> entries</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Time</th><th>Temp</th><th>Humidity</th><th>Pressure</th><th>Status</th></tr>
+      </thead>
+      <tbody id="logBody"></tbody>
+    </table>
+  </section>
+
+  <footer>Instrument readings are simulated for demonstration purposes · Meridian Field Station Panel</footer>
+
+</div>
+
+<script>
+  // ---------- Clock ----------
+  function updateClock(){
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleDateString(undefined,{ weekday:'short', month:'short', day:'numeric' }) + ' · ' +
+      now.toLocaleTimeString(undefined,{ hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ---------- Dial ticks ----------
+  const ticks = document.getElementById('ticks');
+  const ticksMajor = document.getElementById('ticksMajor');
+  const cx = 140, cy = 140;
+  for(let i=0;i<60;i++){
+    const angle = (i/60)*360 - 90;
+    const rad = angle * Math.PI/180;
+    const isMajor = i % 5 === 0;
+    const rOuter = 118;
+    const rInner = isMajor ? 104 : 111;
+    const x1 = cx + rOuter*Math.cos(rad), y1 = cy + rOuter*Math.sin(rad);
+    const x2 = cx + rInner*Math.cos(rad), y2 = cy + rInner*Math.sin(rad);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    (isMajor ? ticksMajor : ticks).appendChild(line);
+  }
+
+  // ---------- Simulated sensor state ----------
+  let state = {
+    temp: 31.4,
+    humidity: 64,
+    wind: 12,
+    pressure: 1009
+  };
+
+  function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
+  function walk(v, delta, min, max){ return clamp(v + (Math.random()-0.5)*delta, min, max); }
+
+  function tempToAngle(t){
+    // map 10 -> 45 to -140deg..140deg
+    const min=10, max=45;
+    const pct = clamp((t-min)/(max-min),0,1);
+    return -140 + pct*280;
+  }
+
+  function trendEl(el, delta, upTxt, downTxt, flatTxt){
+    el.classList.remove('up','down','flat');
+    if(delta > 0.15){ el.classList.add('up'); el.textContent = upTxt; }
+    else if(delta < -0.15){ el.classList.add('down'); el.textContent = downTxt; }
+    else { el.classList.add('flat'); el.textContent = flatTxt; }
+  }
+
+  let logCount = 0;
+  const logBody = document.getElementById('logBody');
+
+  function statusFor(temp, humidity){
+    if(temp > 34 || humidity > 78) return {label:'Watch', cls:'watch'};
+    return {label:'Nominal', cls:'nominal'};
+  }
+
+  function tick(){
+    const prev = {...state};
+    state.temp = walk(state.temp, 1.4, 12, 42);
+    state.humidity = walk(state.humidity, 4, 30, 90);
+    state.wind = walk(state.wind, 3, 2, 38);
+    state.pressure = walk(state.pressure, 1.2, 995, 1025);
+
+    // Dial + readout
+    document.getElementById('needle').style.transform = `rotate(${tempToAngle(state.temp)}deg)`;
+    document.getElementById('tempValue').textContent = state.temp.toFixed(1) + '°';
+    document.getElementById('feelsLike').textContent = (state.temp + 1.6).toFixed(0) + '°';
+    document.getElementById('dewPoint').textContent = (state.temp - 7.4).toFixed(0) + '°';
+    document.getElementById('visibility').textContent = (8 + (state.humidity-64)/40).toFixed(1) + 'km';
+
+    // Humidity card
+    document.getElementById('humidityValue').innerHTML = state.humidity.toFixed(0) + '<span>%</span>';
+    document.getElementById('humidityBar').style.width = state.humidity + '%';
+    trendEl(document.getElementById('humidityTrend'), state.humidity - prev.humidity, '↑ rising','↓ falling','→ steady');
+
+    // Wind card
+    document.getElementById('windValue').innerHTML = state.wind.toFixed(0) + '<span>km/h</span>';
+    document.getElementById('windBar').style.width = clamp(state.wind/40*100,0,100) + '%';
+    trendEl(document.getElementById('windTrend'), state.wind - prev.wind, '↑ gusting','↓ easing','→ steady');
+
+    // Pressure card
+    document.getElementById('pressureValue').innerHTML = state.pressure.toFixed(0) + '<span>hPa</span>';
+    document.getElementById('pressureBar').style.width = clamp((state.pressure-995)/30*100,0,100) + '%';
+    trendEl(document.getElementById('pressureTrend'), state.pressure - prev.pressure, '↑ rising','↓ falling','→ steady');
+
+    // Log entry
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const st = statusFor(state.temp, state.humidity);
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${timeStr}</td><td>${state.temp.toFixed(1)}°</td><td>${state.humidity.toFixed(0)}%</td><td>${state.pressure.toFixed(0)} hPa</td><td><span class="tag ${st.cls}">${st.label}</span></td>`;
+    logBody.prepend(row);
+    while(logBody.children.length > 8){ logBody.removeChild(logBody.lastChild); }
+    logCount++;
+    document.getElementById('logCount').textContent = logCount;
+  }
+
+  tick();
+  setInterval(tick, 3200);
+</script>
+
+</body>
+</html>
