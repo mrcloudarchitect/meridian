@@ -59,8 +59,8 @@ jobs:
         run: |
           kubectl apply -f k8/
 
-      - name: Verify cluster access
-        run: kubectl get nodes
+     # - name: Verify cluster access
+     #   run: kubectl get nodes
 
       - name: Update deployment image
         run: |
