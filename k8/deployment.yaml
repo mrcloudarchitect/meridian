@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: meridian
-          image: 386757865605.dkr.ecr.ap-south-1.amazonaws.com/meridian
+          image: 123456789.dkr.ecr.ap-south-1.amazonaws.com/meridian
           imagePullPolicy: Always
 
           ports:
