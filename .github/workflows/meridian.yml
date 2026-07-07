@@ -29,17 +29,15 @@ jobs:
       # Step 2: Install Gitleaks
       - name: Install Gitleaks
         run: |
-          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh \
-          | sh -s -- -b /usr/local/bin
-
+          GITLEAKS_VERSION="8.21.2"
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          chmod +x gitleaks
+          sudo mv gitleaks /usr/local/bin/gitleaks
       # Step 3: Scan repository for secrets
       - name: Run Gitleaks Scan
-        run: |
-          gitleaks git \
-            --verbose \
-            --redact \
-            --exit-code 1
-
+        run: gitleaks detect --source . --verbose --redact
+      
       # Step 4: Login to AWS using OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
