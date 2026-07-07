@@ -34,9 +34,19 @@ jobs:
           tar -xzf gitleaks.tar.gz gitleaks
           chmod +x gitleaks
           sudo mv gitleaks /usr/local/bin/gitleaks
+
       # Step 3: Scan repository for secrets
       - name: Run Gitleaks Scan
         run: gitleaks detect --source . --verbose --redact
+
+      #Infrastructure and configuration security scan
+      - name: Run Checkov 
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform,kubernetes,cloudformation,dockerfile,secrets
+          output_format: cli
+          soft_fail: true
       
       # Step 4: Login to AWS using OIDC
       - name: Configure AWS Credentials
