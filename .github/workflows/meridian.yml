@@ -1,7 +1,7 @@
-name: Build, Push to ECR and Deploy to EKS
+name: Deploy Application to EKS
 
 on:
- workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -11,62 +11,70 @@ env:
   AWS_REGION: ap-south-1
   EKS_CLUSTER_NAME: your-eks-cluster
   ECR_REPOSITORY: meridian
-  K8S_NAMESPACE: default
   DEPLOYMENT_NAME: meridian
   CONTAINER_NAME: meridian
+  K8S_NAMESPACE: default
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      # Step 1: Download the repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials (OIDC)
+      # Step 2: Login to AWS using OIDC
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Step 3: Login to Amazon ECR
       - name: Login to Amazon ECR
-        id: login-ecr
+        id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and Push Docker image
+      # Step 4: Build and Push Docker Image
+      - name: Build and Push Docker Image
         run: |
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          IMAGE_URI=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
+          echo "Building image..."
           docker build -t $IMAGE_URI .
+
+          echo "Pushing image to Amazon ECR..."
           docker push $IMAGE_URI
 
+          # Save the image URI for later steps
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
+      # Step 5: Install kubectl
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
-        with:
-          version: latest
 
+      # Step 6: Connect to the EKS cluster
       - name: Configure kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --name $EKS_CLUSTER_NAME \
-            --region $AWS_REGION
+            --region $AWS_REGION \
+            --name $EKS_CLUSTER_NAME
 
-      - name: Deploy Kubernetes manifests
+      # Step 7: Apply Kubernetes manifests
+      - name: Deploy Kubernetes Manifests
         run: |
           kubectl apply -f k8/
 
-     # - name: Verify cluster access
-     #   run: kubectl get nodes
-
-      - name: Update deployment image
+      # Step 8: Update the deployment with the new image
+      - name: Update Deployment Image
         run: |
-          kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} \
-            ${{ env.CONTAINER_NAME }}=$IMAGE_URI \
-            -n ${{ env.K8S_NAMESPACE }}
+          kubectl set image deployment/$DEPLOYMENT_NAME \
+            $CONTAINER_NAME=$IMAGE_URI \
+            -n $K8S_NAMESPACE
 
-      - name: Wait for rollout
+      # Step 9: Wait until the deployment is successful
+      - name: Check Rollout Status
         run: |
-          kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} \
-            -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/$DEPLOYMENT_NAME \
+            -n $K8S_NAMESPACE
